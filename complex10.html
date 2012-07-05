@@ -36,6 +36,7 @@ overflow: auto
 	<select id="selectColorCode"></select>
 	<div id="plot" style="height:500px; width:900px;"></div>
 	<div id="list" style=" min-width:50px; display:absolute; max-width:350px; min-height:35px; max-height: 200px; position:relative;">	</div>
+	<div id="histogramScale" style="height:200px; width:400px; border:2px solid blue;"></div>	
 		<script type="text/javascript">
 
 
@@ -60,6 +61,8 @@ overflow: auto
  //Create SVG element
 var svg = d3.select("#plot")
 	.append("svg")
+	.attr("exists","true")
+	.attr("id", "this")
 	.attr("width", w)
 	.attr("height", h);
 	
@@ -126,7 +129,7 @@ getKeys.forEach( function(keyTemp, i){
 		var stringTypesCheck =[];
 		//goes through the whole data set to look for different definitions of the temporary key.
 		d.forEach(function(keyValue){
-		{
+		
 			//if this new definition (i.e. female) does not already exist
 			
 			if(stringTypesCheck.indexOf(keyValue.sample[keyTemp])<0)
@@ -144,7 +147,7 @@ getKeys.forEach( function(keyTemp, i){
 					stringTypes[keyIndex].numOfType = numBefore + 1;
 				
 				}
-		}
+		
 	});
 	//adds the array of color objects to the keyTypeObject object
 	keyTypeObject.colorsList = stringTypes;
@@ -175,12 +178,13 @@ var string = false, num =false;
 var colorIndex;
 drawGraph();
 function drawGraph(){
+
 //goes through attributes array
 	var color1 = "yellow";
 	var color2 = "blue";
 var colorInterpolator;
 select = document.getElementById("selectColorCode");
-colorCode = select.options[select.selectedIndex].value;
+colorCode = "age" //select.options[select.selectedIndex].value;
 
 //var textAll= document.getElementsByTagName("div")["list"];	// for the rest of the known world
 attributes.forEach(function(keyType, i){
@@ -189,13 +193,63 @@ if (keyType.key == colorCode)
 {
 	colorIndex = i;
 	//alert(colorCode);
-				var heightOfText = 15;
-
+	var heightOfText = 15;
 	//if the key definitions are numbers
 	if (keyType.dataType=="number")
 	{
 	//alert("num");
 		var colorDomainMin = keyType.keyMin;
+		
+		var histValues = [];
+		d.forEach(function(point, i){
+		histValues[i] = point.sample[colorCode];
+		});
+		
+		var numBins =10;
+		var wHist = document.getElementsByTagName("div")["histogramScale"].offsetWidth;
+		var hHist = document.getElementsByTagName("div")["histogramScale"].offsetHeight;
+		var histPadding = .1*Math.sqrt(hHist*wHist);
+		var histogram = d3.layout.histogram().bins(numBins)
+				(histValues);
+
+		//histogram.range(keyType.keyMin, keyType.keyMax).bins(1);
+		
+		var xHist = d3.scale.ordinal()
+		.domain(histogram.map(function(d) { 
+		return d.x; }))
+		.rangeRoundBands([histPadding, wHist-histPadding]);
+
+		var yHist = d3.scale.linear()
+		.domain([0, d3.max(histogram, function(d) { return d.y; })])
+		.range([histPadding, (hHist-(2*histPadding))]);
+		
+		var svgHist= d3.select("#histogramScale")
+		.append("svg")
+		.attr("width", wHist)
+		.attr("height", hHist);
+		
+		
+		svgHist.selectAll("rect")
+    .data(histogram)
+	.enter()
+	.append("rect")
+    .attr("width", xHist.rangeBand())
+    .attr("x", function(d) {
+		return xHist(d.x); })
+    .attr("y", function(d) { return hHist - yHist(d.y) - histPadding; })
+    .attr("height", function(d) {return yHist(d.y); });
+		
+	var xAxisHist = d3.svg.axis()
+    .scale(xHist)
+    .orient("bottom")
+	.ticks(numBins/3);	
+	
+	svgHist.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate( 0," + (hHist - histPadding) + ")")
+    .call(xAxisHist);
+	
+	
 		//creates an rgb interpolator if the hue values are too far apart (i.e. red/ blue or red/ purple)
 			if (Math.abs(d3.hsl(color1).h - d3.hsl(color2).h)>200)
 			{
@@ -399,12 +453,15 @@ svg.append("circle")
 	//creates the axises
 	
 	$("#selectColorCode").change(function(e) {
-	var circlesToRemove = svg.selectAll("circle");
-circlesToRemove.remove();
-var textToRemove = document.getElementById("keyText");
-			textToRemove.parentNode.removeChild(textToRemove);
-	document.getElementById("list").innerHTML = "";
- drawGraph(d); 
+	
+	if ($('#this').attr("exists") == "true"){
+		var circlesToRemove = svg.selectAll("circle");
+		circlesToRemove.remove();
+		var textToRemove = document.getElementById("keyText");
+		textToRemove.parentNode.removeChild(textToRemove);
+		document.getElementById("list").innerHTML = "";
+		drawGraph(d); 
+	}
  });
 var xAxis = d3.svg.axis()
                   .scale(xScale)
