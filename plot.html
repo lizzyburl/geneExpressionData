@@ -1,0 +1,40 @@
+<html>
+<head>
+	<script type="text/javascript" src="vis.js"></script>
+</head>
+<body onload="makePlot('CARD16','CARD17','GSE25935')">
+ <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
+	<script src="http://code.jquery.com/jquery-1.4.2.js"></script>
+	<select id="selectColorCode">
+	</select>
+	<style type="text/css">
+			
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 10px;
+}			
+
+#plot {
+border: 2px solid blue;
+overflow: hidden
+
+}
+
+#list{
+border: 2px solid blue;
+overflow: auto
+}
+
+		</style>
+	<div id="plot" style="border:2px solid red; height:500px; width:700px;"></div>
+	<div id="list" style="border:2px solid blue; height:200px; width:300px;"></div>
+	<div id="hist" style="border:2px solid green; height:200px; width:400px;"></div>
+</body>
+</html>
