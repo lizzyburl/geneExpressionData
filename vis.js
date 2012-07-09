@@ -5,8 +5,8 @@ function makePlot( geneX, geneY, studyID)
     document.getElementById("hist").innerHTML = "";
     var color1 = "yellow";
     var color2 = "blue";
-
-
+	var offClickElem;
+	var clicked = false;
     //Width and height
     var w = document.getElementsByTagName("div")["plot"].offsetWidth;
     var h = document.getElementsByTagName("div")["plot"].offsetHeight;
@@ -30,9 +30,9 @@ function makePlot( geneX, geneY, studyID)
     var wCol = document.getElementsByTagName("div")["list"].offsetWidth;
     var hCol = document.getElementsByTagName("div")["list"].offsetHeight;
 
-    var data = {studyid: studyid, gene_x: gene_x, gene_y: gene_y};
-    $.getJSON("http://yates.webfactional.com/studies/getChartData", data, function(d){
-	    // $.getJSON("complexData.txt", data, function(d){
+   // var data = {studyid: studyid, gene_x: gene_x, gene_y: gene_y};
+    //$.getJSON("http://yates.webfactional.com/studies/getChartData", data, function(d){
+	    $.getJSON("complexData.txt",  function(d){
 	    //getting data
 	    var list = document.getElementById("list");
 	    var isListEmpty = list.firstChild
@@ -69,7 +69,7 @@ function makePlot( geneX, geneY, studyID)
 	    };
 	    
 	    var isInSelect = (select.length==0);
-   
+		
 	    //loops through the keys that were returned to create the keyTypeObjects
 	    getKeys.forEach( function(keyTemp, i){
 		    //gets the first value in the data set to verify the type of the key
@@ -482,7 +482,7 @@ function makePlot( geneX, geneY, studyID)
 			    .attr("cy", function(d) {
 				    return yScale(y);
 				})
-			    .attr("r", w*h/108000)
+			    .attr("r", w*h*.00001)
 			    .attr("id", "allCircles")
 			    .attr("fill", function(){ if (num)
 					{
@@ -504,7 +504,7 @@ function makePlot( geneX, geneY, studyID)
 					        
 					}
 				})
-			    .style("opacity", .3)
+			    .style("opacity", .5)
 			    .attr("stroke", "black")
 			    .attr("stroke-width", .5)
 			    .on("mouseover", function(){
@@ -531,19 +531,30 @@ function makePlot( geneX, geneY, studyID)
 				    elem = document.getElementById("boxText");
 				    elem.parentNode.removeChild(elem);
 
+				})
+				.on("click", function(){
+					var text;
+					var infoDiv = document.getElementById("info");
+					infoDiv.innerHTML = "";
+					makeRadiusSmallerAgain();
+					d3.select(this).attr("r", w*h*.00002).attr("id", "offClick").style("opacity", 1);
+					attributes.forEach(function(attr){;
+					text= attr.key + ": " + point.sample[attr.key];
+					var infoDivPart = document.createElement("div");
+                                        infoDivPart.textContent= text;
+					infoDivPart.style.fontSize = "14px";
+                                        infoDivPart.style.position = "relative";
+                                        infoDivPart.style.fontFamily = "sans-serif";
+					
+					clicked = true;
+					infoDiv.appendChild(infoDivPart);
+					
+					});
+				
+				
 				});
 		    });// semi colon added
-		/*
-		  svg.append("text")
-		      .attr("class", "text")
-		          .attr("id", "keyText")
-			      .attr("text-anchor", "front")
-			          .attr("x", w*.7+ padding/2)
-				      .attr("y", padding/2 +5)
-				          .text("Colored By: " + colorCode)
-					      .attr("font-family", "sans-serif")
-					          .attr("font-size", w/70)
-						  .attr("fill", "black");*/
+	
 	    };//semi colon
 	    //creates the axises
 	        
@@ -561,6 +572,23 @@ function makePlot( geneX, geneY, studyID)
 
 		    }
 		});
+
+		$(document).click(function() { 
+					
+			var infoDiv = document.getElementById("info");
+			if(!clicked){
+					makeRadiusSmallerAgain();
+					infoDiv.innerHTML = "";
+					
+					}
+			
+			clicked = false;
+				
+});	
+		function makeRadiusSmallerAgain(){
+					var offClickElem = document.getElementById("offClick");
+					d3.select(offClickElem).attr("r", w*h*.00001).attr("id", "allCircles").style("opacity", .5);
+		}
 	    var xAxis = d3.svg.axis()
 		.scale(xScale)
 		.orient("bottom")
