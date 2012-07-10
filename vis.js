@@ -81,6 +81,7 @@ function makePlot( geneX, geneY, studyID)
 			key: keyTemp,
 			dataType: typeof typeIndicator
 		    };
+			//keyTypeObject.setAttribute("id", keyTemp);
 		    //gives the object the min and max properties if it is a number.
 		    if (keyTypeObject.dataType == "number")
 			{
@@ -512,15 +513,15 @@ function makePlot( geneX, geneY, studyID)
 				    svg.append("rect")
 					.attr("fill", "white")
 					//.text(function(){return (colorCode + ": " + point.sample[colorCode])})//"(" + x + ", " + y + ")";})
-					.attr("x",  function() { return xScale(x);} )
-					.attr("y", function() { return yScale(y)-16;})
+					.attr("x",  function() { return xScale(x)+3;} )
+					.attr("y", function() { return yScale(y)-19;})
 					.attr("id", "boxText")
 					.attr("width", function(){return (5+(8*(colorCode.length + (String(point.sample[colorCode]).length))));})
 					.attr("height", 20);
 				    svg.append("text")
 					.text(function(){return (colorCode + ": " + point.sample[colorCode])})//"(" + x + ", " + y + ")";})
-					.attr("x",  function() { return xScale(x);} )
-					.attr("y", function() { return yScale(y);})
+					.attr("x",  function() { return xScale(x)+3;} )
+					.attr("y", function() { return yScale(y)-3;})
 					.attr("id", "pointText")
 					.attr("font-size", 13)
 					.attr("font-family", "sans-serif");
@@ -537,7 +538,7 @@ function makePlot( geneX, geneY, studyID)
 					var infoDiv = document.getElementById("info");
 					infoDiv.innerHTML = "";
 					makeRadiusSmallerAgain();
-					d3.select(this).attr("r", w*h*.00002).attr("id", "offClick").style("opacity", 1);
+					d3.select(this).attr("r", w*h*.000012).attr("id", "offClick").style("opacity", .9).attr("stroke-width", 1.3);
 					attributes.forEach(function(attr){;
 					text= attr.key + ": " + point.sample[attr.key];
 					var infoDivPart = document.createElement("div");
@@ -587,7 +588,7 @@ function makePlot( geneX, geneY, studyID)
 });	
 		function makeRadiusSmallerAgain(){
 					var offClickElem = document.getElementById("offClick");
-					d3.select(offClickElem).attr("r", w*h*.00001).attr("id", "allCircles").style("opacity", .5);
+					d3.select(offClickElem).attr("r", w*h*.00001).attr("id", "allCircles").style("opacity", .5).attr("stroke-width", .5);
 		}
 	    var xAxis = d3.svg.axis()
 		.scale(xScale)
@@ -647,11 +648,6 @@ function makePlot( geneX, geneY, studyID)
 	.attr("fill", "black");
 
  
-    //added semicolon
-    //reloads the graph on resize
-    /*$(window).resize(debounce(function (e) {
-    window.location.reload(false);
-    }, 250, false));*/
 
     //Trying to use a brush now!!!!
     /*var brush = d3.svg.brush()
