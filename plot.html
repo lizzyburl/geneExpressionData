@@ -1,10 +1,29 @@
 <html>
 <head>
-	<script type="text/javascript" src="vis.js"></script>
+	<script type="text/javascript" src="vis4.js"></script>
 </head>
-<body onload="makePlot('CARD16','CARD17','GSE25935')">
- <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
+<body onload="plottingTime()">
+
+	<script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
 	<script src="http://code.jquery.com/jquery-1.4.2.js"></script>
+	<script language="javascript">
+	var attrData;
+	var attributes;
+	function plottingTime() {
+		$.getJSON("attributes.txt", function(data) {
+			attrData = data;
+			//alert("in json function: " + data);
+			attributes = makeAttributesDictionary(attrData);
+			//alert(attributes);
+			makePlot('CARD16','CARD17','GSE25935',attrData, attributes);
+		});
+				
+
+		
+	}
+	</script>
+	
+	
 	<select id="selectColorCode">
 	</select>
 	<style type="text/css">
@@ -36,6 +55,6 @@ overflow: auto
 	<div id="plot" style="border:2px solid pink; height:500px; width:700px;"></div>
 	<div id="list" style="border:2px solid lightblue; max-height:200px; width:300px;"></div>
 	<div id="hist" style="border:2px solid lightgreen; height:200px; width:400px;"></div>
-	<div id="info" style="border:2px solid purple; height:200px; width:200px;"></div>
+	<div id="info" style="border:2px solid purple; max-height:300px; min-height:100px; width:200px; overflow:auto;"></div>
 </body>
 </html>
