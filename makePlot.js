@@ -17,12 +17,7 @@ function makePlot( geneX, geneY, studyID)
     var gene_y = geneY; 
     var studyid = studyID;
     //Create SVG element
-    var svg = d3.select("#plot")
-	.append("svg")
-	.attr("exists","true")
-	.attr("id", "this")
-	.attr("width", w)
-	.attr("height", h);
+    
 
 
    // var data = {studyid: studyid, gene_x: gene_x, gene_y: gene_y};
@@ -33,6 +28,7 @@ function makePlot( geneX, geneY, studyID)
 		//  $.getJSON("complexData.txt", data, function(d){
 		var select = document.getElementById("selectColorCode");
 	    //finds max x and y to set the scale
+		
 	    var xMax = d3.max(d, function(d){return d.x; });
 	    var xMin = d3.min(d, function(d){return d.x; });
 	    var yMax = d3.max(d, function(d){ return d.y; });
@@ -53,23 +49,37 @@ function makePlot( geneX, geneY, studyID)
 	    
 	    drawGraph();
 	    function drawGraph(){
-       
+		
 		    //goes through attributes array
-		
+
 		select = document.getElementById("selectColorCode");
-		colorCode = select.options[select.selectedIndex].value;	
+		colorChosen = select.options[select.selectedIndex].value;	
 		dataSetLength  = d.length;
-		
+		for (colorCode in attributes){
+		var svg = d3.select("#plot")
+		.append("svg")
+		.attr("exists","true")
+		//.attr("id", "this")
+		.attr("width", w)
+		.attr("height", h);
 				var keyType = attributes[colorCode];
-				
+				svg.attr("id", "svg" + colorCode);
 			//	var heightOfText = 15;
-				
+				//]
 				//if the key definitions are numbers
 				if (keyType.dataType=="number")
 				    {
 						var colorDomainMin = keyType.keyMin;
 				    } //ends key type is a number
-
+			//var colorPlotToHide = document.getElementById("svg" + colorCode);
+			if(colorCode!=colorChosen){
+				svg.attr("display", "none");
+				}
+			else
+			{
+				svg.attr("display", "inline");
+			}
+				
 
 
 		   // });if
@@ -87,6 +97,7 @@ function makePlot( geneX, geneY, studyID)
 			var colIndex;
 			//DRAWS ALL THE THINGS!!!
 			var numOfType= [];
+			
 			svg.append("circle")
 			    .attr("cx", function() {
 				    return xScale(x);
@@ -166,42 +177,7 @@ function makePlot( geneX, geneY, studyID)
 					} //ends for each attribute
 				}); //ends on click
 		    });// ends loop through points
-	
-	    };//semi colon
-	    //creates the axises
-	        
-	    $("#selectColorCode").change(function(e) {
-		        
-		    if ($('#this').attr("exists") == "true"){
-			var circlesToRemove = svg.selectAll("circle");
-			circlesToRemove.remove();
-			
-			document.getElementById("list").innerHTML = "";
-			document.getElementById("hist").innerHTML = "";
-			makeHistogramAndList();
-			
-			drawGraph(d); 
-
-		    } //end if
-		}); //ends change
-
-		$(document).click(function() { 
-					
-			var infoDiv = document.getElementById("info");
-			if(!clicked){
-					makeRadiusSmallerAgain();
-					infoDiv.innerHTML = "";
-					
-					}
-			
-			clicked = false;
-				
-		});	//ends click
-		function makeRadiusSmallerAgain(){
-					var offClickElem = document.getElementById("offClick");
-					d3.select(offClickElem).attr("r", w*h*.00001).attr("id", "allCircles").style("opacity", .5).attr("stroke-width", .5);
-		}
-	    var xAxis = d3.svg.axis()
+				    var xAxis = d3.svg.axis()
 		.scale(xScale)
 		.orient("bottom")
 		.ticks(w*.015);  //Set rough # of ticks
@@ -220,9 +196,7 @@ function makePlot( geneX, geneY, studyID)
 		.attr("class", "axis")
 		.attr("transform", "translate(" +( padding + 2 )+ ",0)")
 		.call(yAxis);
-	});  //this is supposed to end getJSON
-
-    //creates an x label
+		    //creates an x label
     svg.append("text")
 	.attr("class", "x label")
 	.attr("text-anchor", "middle")
@@ -255,6 +229,92 @@ function makePlot( geneX, geneY, studyID)
 	.attr("font-family", "sans-serif")
 	.attr("font-size", padding*.22)
 	.attr("fill", "black");
+			
+			
+			
+		} //ends for loop of color codes
+		
+	    };//semi colon
+	    //creates the axises
+	        
+	    $("#selectColorCode").change(function(e) {
+		        
+		   // if ($('#this').attr("exists") == "true"){
+			//var circlesToRemove = svg.selectAll("circle");
+			//circlesToRemove.remove();
+			colorChosen = select.options[select.selectedIndex].value;
+			var plot = document.getElementById("plot");
+			var hist = document.getElementById("hist");
+			var list = document.getElementById("list");
+			
+			for (colorCode in window.attributes)
+			{
+				
+				if ($("#svg" + colorCode).attr("exists") == "true"){
+					var colorPlot = document.getElementById("svg" + colorCode);
+					if(colorCode==colorChosen){
+						d3.select(colorPlot).attr("display", "inline");
+						
+						}
+					else{
+						d3.select(colorPlot).attr("display", "none");
+						}
+			}
+				var colorHist = document.getElementById("hist"+colorCode);
+				//alert(colorCode+": "+colorHist);
+				if(colorHist!=null){
+				if(colorCode==colorChosen){
+						d3.select(colorHist).attr("display", "inline");
+						
+						}
+					else{
+						d3.select(colorHist).attr("display", "none");
+						}
+				}
+				var infoList = document.getElementById("list" + colorCode);
+				//alert(colorCode+": "+colorHist);
+				//if(colorHist!=null){
+				if(colorCode==colorChosen){
+						infoList.style.display = "inline";
+	
+						}
+					else{
+						infoList.style.display = "none";
+						}
+				//}
+				var infoList = document.getElementById("list" + colorCode);
+				
+				
+			}
+			//document.getElementById("list").innerHTML = "";
+			//document.getElementById("hist").innerHTML = "";
+			
+			
+			//drawGraph(d); 
+
+		     
+		}); //ends change
+
+		$(document).click(function() { 
+					
+			var infoDiv = document.getElementById("info");
+			if(!clicked){
+					makeRadiusSmallerAgain();
+					infoDiv.innerHTML = "";
+					
+					}
+			
+			clicked = false;
+				
+		});	//ends click
+		function makeRadiusSmallerAgain(){
+					var offClickElem = document.getElementById("offClick");
+					d3.select(offClickElem).attr("r", w*h*.00001).attr("id", "allCircles").style("opacity", .5).attr("stroke-width", .5);
+		}
+
+	});  //this is supposed to end getJSON
+
+
 
 
 }

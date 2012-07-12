@@ -110,9 +110,9 @@ function makeAttributesDictionary(){
 		for(colorObjectId in keyTypeObject.colorsList){
 			var colorObject = keyTypeObject.colorsList[colorObjectId];
 			if(keyTypeObject.numColors<6)
-		{
-		var presetColors= ["hsl(54, 100%, 51%)", "hsl(142, 100%, 44%)", "red", "hsl(290, 100%, 39%)", "hsl(28, 100%, 58%)",  "hsl(215, 100%, 40%)"];
-		}
+			{
+				var presetColors= ["hsl(54, 100%, 51%)", "hsl(142, 100%, 44%)", "red", "hsl(290, 100%, 39%)", "hsl(28, 100%, 58%)",  "hsl(215, 100%, 40%)"];
+			}
 			if(keyTypeObject.numColors<6)
 			{
 			
@@ -137,7 +137,8 @@ function makeAttributesDictionary(){
 			
 			var hueVal = j*280/keyTypeObject.numColors;
 			var hueColor =  "hsl(" + (hueVal) + ", 100%, 50%)";
-			colorObject.color =  hueColor;//colorInterpolator(j);
+			colorObject.color =  hueColor;
+			j++;
 			   }
 			}
 		    
