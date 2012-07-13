@@ -7,13 +7,13 @@ function makeHistogramAndList()
 	var wCol = document.getElementsByTagName("div")["list"].offsetWidth;
 	var hCol = document.getElementsByTagName("div")["list"].offsetHeight;
 	var list = document.getElementById("list");
-	var hist = document.getElementById("list");
+	var hist = document.getElementById("hist");
 	//there will be no need for this when i make all of them at once.
 	var select = document.getElementById("selectColorCode");
 	colorChosen = select.options[select.selectedIndex].value;
 	//var isListEmpty = list.firstChild;
 	var divWords = document.createElement("div");
-	var eachHist = {};
+	//var eachHist = {};
 	for (colorCode in attributes){
 	
 		//making list containing div
@@ -132,11 +132,13 @@ function makeHistogramAndList()
 			
 			
 				divList.appendChild(divMax);
-				
-				if (colorCode==colorChosen)
-					divList.style.display = "inline";
-					else
-					divList.style.display="none";
+					if(colorCode==colorChosen){
+						divList.style.display = "inline";
+	
+						}
+					else{
+						divList.style.display = "none";
+						}
 					
 				list.appendChild(divList);
 
@@ -155,13 +157,13 @@ function makeHistogramAndList()
 		for (colorObjectId in keyType.colorsList)
 			{
 				var colorObject = keyType.colorsList[colorObjectId];
-			
+
 			if (colorObject.numOfType> maxNumOfType)
 				maxNumOfType = colorObject.numOfType;
-			
-			
+
+
 			typeAndNum = (colorObject.id )  + "  (" + (colorObject.numOfType) + ")";
-			
+
 			//var list = document.getElementsByTagName("div")["list"];
 			var tab=document.createElement('table');
 			var tbo=document.createElement('tbody');
@@ -171,7 +173,7 @@ function makeHistogramAndList()
 				divRect.style.width = "30px";
 			divRect.style.height = heightOfText + "px";
 			divRect.style.background = colorObject.color;
-			
+
 			divRect.style.top=  "0px";
 			row=document.createElement('tr');
 			cell=document.createElement('td');
@@ -185,8 +187,8 @@ function makeHistogramAndList()
 			divWords.style.fontFamily = "sans-serif";
 			divWords.style.top= "0px";
 			divWords.style.maxWidth= "200px";
-				  
-			
+
+
 
 			cell = document.createElement('td');
 			cell.appendChild(divWords);
@@ -194,21 +196,20 @@ function makeHistogramAndList()
 
 			tbo.appendChild(row);
 			tab.appendChild(tbo);
-			
-			
 			divList.appendChild(tab);
-			
-			
+
+
 			j++;
 			}
 			if (colorCode==colorChosen)
 				divList.style.display="inline";
 			else
 				divList.style.display="none";
-				
-			
+
+
 			list.appendChild(divList);
-			
+
+			}
 			
 		if((keyType.numColors< dataSetLength)&&(keyType.numColors>1))
 			{
@@ -278,7 +279,7 @@ function makeHistogramAndList()
 				.attr("transform", "translate( 0," + (hHist - histPadding) + ")")
 				.call(xAxisHist);
 			
-			}
+			
 						
 		}
 	}

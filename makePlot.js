@@ -63,7 +63,7 @@ function makePlot( geneX, geneY, studyID)
 		.attr("width", w)
 		.attr("height", h);
 				var keyType = attributes[colorCode];
-				svg.attr("id", "svg" + colorCode);
+				svg.attr("class", "svg" + colorCode);
 			//	var heightOfText = 15;
 				//]
 				//if the key definitions are numbers
@@ -83,6 +83,7 @@ function makePlot( geneX, geneY, studyID)
 
 
 		   // });if
+
 
 		//goes through the points to plot
 		d.forEach(function(point,i){
@@ -134,29 +135,37 @@ function makePlot( geneX, geneY, studyID)
 			    .attr("stroke", "black")
 			    .attr("stroke-width", .5)
 			    .on("mouseover", function(){
+				
 				    //shows the x and y location: This needs to be changed still.
 				    svg.append("rect")
 					.attr("fill", "white")
 					//.text(function(){return (colorCode + ": " + point.sample[colorCode])})//"(" + x + ", " + y + ")";})
 					.attr("x",  function() { return xScale(x)+3;} )
 					.attr("y", function() { return yScale(y)-19;})
-					.attr("id", "boxText")
+					.attr("id", "boxText"+colorCode)
 					.attr("width", function(){return (5+(8*(colorCode.length + (String(attrData[i].sample[colorCode]).length))));})
-					.attr("height", 20);
+					.attr("height", 20)
+					.attr("display", "block");
 				    svg.append("text")
 					.text(function(){return (colorCode + ": " + attrData[i].sample[colorCode])})//"(" + x + ", " + y + ")";})
 					.attr("x",  function() { return xScale(x)+3;} )
 					.attr("y", function() { return yScale(y)-3;})
-					.attr("id", "pointText")
+					.attr("id", "pointText"+colorCode)
 					.attr("font-size", 13)
-					.attr("font-family", "sans-serif");
+					.attr("font-family", "sans-serif")
+					.attr("display", "block");
+					
 				})
 			    .on("mouseout", function(){
-				    var elem = document.getElementById("pointText");
-				    elem.parentNode.removeChild(elem);
-				    elem = document.getElementById("boxText");
-				    elem.parentNode.removeChild(elem);
+					d3.selectAll("#boxText" + colorCode).attr("display", "none");
+					d3.selectAll("#pointText" + colorCode).attr("display", "none");
 
+					/*
+				    var elem = document.getElementById("pointText"+colorCode);
+				    elem.parentNode.removeChild(elem);
+				    elem = document.getElementById("boxText"+colorCode);
+				    elem.parentNode.removeChild(elem);
+*/
 				}) 
 				.on("click", function(){
 					var text;
@@ -196,6 +205,39 @@ function makePlot( geneX, geneY, studyID)
 		.attr("class", "axis")
 		.attr("transform", "translate(" +( padding + 2 )+ ",0)")
 		.call(yAxis);
+		//BRUSH!!!
+		/*
+ var brush = d3.svg.brush()
+      .on("brushstart", brushstart)
+      .on("brush", brush)
+      .on("brushend", brushend);
+	  
+
+svg.append("g")
+    .attr("class", "brush")
+    .call(d3.svg.brush().x(xScale).y(yScale)
+    .on("brushstart", brushstart)
+    .on("brush", brush)
+    .on("brushend", brushend));
+
+function brushstart() {
+  svg.classed("selecting", true);
+}
+
+function brush() {
+  var e = d3.event.target.extent();
+  circle.classed("selected", function(d) {
+    return e[0][0] <= d[0] && d[0] <= e[1][0]
+        && e[0][1] <= d[1] && d[1] <= e[1][1];
+  });
+}
+
+function brushend() {
+  svg.classed("selecting", !d3.event.target.empty());
+}
+
+
+		*/
 		    //creates an x label
     svg.append("text")
 	.attr("class", "x label")
@@ -222,7 +264,7 @@ function makePlot( geneX, geneY, studyID)
     svg.append("text")
 	.attr("class", "y label")
 	.attr("text-anchor", "middle")
-	.attr("y", padding*.2)
+	.attr("y", padding*.2 + 5)
 	.attr("x", -h/2)
 	.attr("transform", "rotate(-90)")
 	.text(gene_y)
@@ -248,41 +290,56 @@ function makePlot( geneX, geneY, studyID)
 			var list = document.getElementById("list");
 			
 			for (colorCode in window.attributes)
-			{
-				
-				if ($("#svg" + colorCode).attr("exists") == "true"){
-					var colorPlot = document.getElementById("svg" + colorCode);
+			{		
+
 					if(colorCode==colorChosen){
-						d3.select(colorPlot).attr("display", "inline");
-						
+						d3.selectAll(".svg" + colorCode).attr("display", "inline");
 						}
 					else{
-						d3.select(colorPlot).attr("display", "none");
+						d3.selectAll(".svg" + colorCode).attr("display", "none");
+						d3.selectAll("#boxText" + colorCode).attr("display", "none");
+						d3.selectAll("#pointText" + colorCode).attr("display", "none");
 						}
-			}
-				var colorHist = document.getElementById("hist"+colorCode);
+						
+						
+						//});
+						//}
+					//}
+				//var colorHist = d3.select("#hist"+colorCode);
 				//alert(colorCode+": "+colorHist);
-				if(colorHist!=null){
+				if(d3.select("#hist"+colorCode)!=null){
 				if(colorCode==colorChosen){
-						d3.select(colorHist).attr("display", "inline");
+						d3.select("#hist"+colorCode).attr("display", "inline");
 						
 						}
 					else{
-						d3.select(colorHist).attr("display", "none");
+						d3.select("#hist"+colorCode).attr("display", "none");
 						}
 				}
+				//var infoList = d3.select("#list" + colorCode);
+				
+				
 				var infoList = document.getElementById("list" + colorCode);
-				//alert(colorCode+": "+colorHist);
-				//if(colorHist!=null){
 				if(colorCode==colorChosen){
 						infoList.style.display = "inline";
-	
+
 						}
 					else{
 						infoList.style.display = "none";
 						}
+						
+				//alert(colorCode+": "+colorHist);
+				//if(colorHist!=null){
+			/*	if(colorCode==colorChosen){
+						d3.select("#list").select("#list" + colorCode).attr("display", "inline");
+	
+						}
+					else{
+						d3.select("#list").select("#list" + colorCode).attr("display", "none");
+						}
+						*/
 				//}
-				var infoList = document.getElementById("list" + colorCode);
+				//var infoList = document.getElementById("list" + colorCode);
 				
 				
 			}
