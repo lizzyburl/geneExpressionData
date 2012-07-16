@@ -1,23 +1,24 @@
+var gene_x;
+var gene_y;
+
 function makePlot( geneX, geneY, studyID)
 {
     attrData = window.attrData;
 	attributes = window.attributes;
-	var offClickElem;
-	var clicked = false;
     //Width and height
     var w = document.getElementsByTagName("div")["plot"].offsetWidth;
     var h = document.getElementsByTagName("div")["plot"].offsetHeight;
-    
+    //alert("W: " + w);
     //sets padding
     var padding = 4*Math.log(w) +30;
     //var xAxis = d3.svg.axis();
     
 
-    var gene_x = geneX;
-    var gene_y = geneY; 
+    gene_x = geneX;
+    gene_y = geneY; 
     var studyid = studyID;
     //Create SVG element
-    
+    var clicked  = false;
 
 
    // var data = {studyid: studyid, gene_x: gene_x, gene_y: gene_y};
@@ -59,7 +60,7 @@ function makePlot( geneX, geneY, studyID)
 		var svg = d3.select("#plot")
 		.append("svg")
 		.attr("exists","true")
-		//.attr("id", "this")
+		.attr("id", "svg" + colorCode +gene_x + gene_y)
 		.attr("width", w)
 		.attr("height", h);
 				var keyType = attributes[colorCode];
@@ -73,17 +74,21 @@ function makePlot( geneX, geneY, studyID)
 				    } //ends key type is a number
 			//var colorPlotToHide = document.getElementById("svg" + colorCode);
 			if(colorCode!=colorChosen){
+				//svg.attr("visibility", "hidden");
 				svg.attr("display", "none");
 				}
 			else
 			{
+				//svg.attr("visibility", "visible");
 				svg.attr("display", "inline");
 			}
 				
 
 
 		   // });if
+		   
 
+					
 
 		//goes through the points to plot
 		d.forEach(function(point,i){
@@ -115,19 +120,7 @@ function makePlot( geneX, geneY, studyID)
 					}
 				    else
 					{ 
-					    //finds the colorObject key that matches the data from point.
-
-					 /*   attributes[colorCode].colorsList.forEach(function(c, i){
-						    if (c.id==numCol)
-							{
-							    colIndex = i;
-							}
-						});
-					    //returns the corresponding color*/
-
-						//alert(attributes[colorCode].colorsList[numCol].color);
 						return attributes[colorCode].colorsList[numCol].color;
-					   // return attributes[colorCode].colorsList[colIndex].color;
 					        
 					}
 				})
@@ -135,37 +128,10 @@ function makePlot( geneX, geneY, studyID)
 			    .attr("stroke", "black")
 			    .attr("stroke-width", .5)
 			    .on("mouseover", function(){
-				
-				    //shows the x and y location: This needs to be changed still.
-				    svg.append("rect")
-					.attr("fill", "white")
-					//.text(function(){return (colorCode + ": " + point.sample[colorCode])})//"(" + x + ", " + y + ")";})
-					.attr("x",  function() { return xScale(x)+3;} )
-					.attr("y", function() { return yScale(y)-19;})
-					.attr("id", "boxText"+colorCode)
-					.attr("width", function(){return (5+(8*(colorCode.length + (String(attrData[i].sample[colorCode]).length))));})
-					.attr("height", 20)
-					.attr("display", "block");
-				    svg.append("text")
-					.text(function(){return (colorCode + ": " + attrData[i].sample[colorCode])})//"(" + x + ", " + y + ")";})
-					.attr("x",  function() { return xScale(x)+3;} )
-					.attr("y", function() { return yScale(y)-3;})
-					.attr("id", "pointText"+colorCode)
-					.attr("font-size", 13)
-					.attr("font-family", "sans-serif")
-					.attr("display", "block");
-					
+					rollOn(i, point, xScale, yScale);
 				})
 			    .on("mouseout", function(){
-					d3.selectAll("#boxText" + colorCode).attr("display", "none");
-					d3.selectAll("#pointText" + colorCode).attr("display", "none");
-
-					/*
-				    var elem = document.getElementById("pointText"+colorCode);
-				    elem.parentNode.removeChild(elem);
-				    elem = document.getElementById("boxText"+colorCode);
-				    elem.parentNode.removeChild(elem);
-*/
+					rollOff();
 				}) 
 				.on("click", function(){
 					var text;
@@ -179,18 +145,35 @@ function makePlot( geneX, geneY, studyID)
 											infoDivPart.textContent= text;
 						infoDivPart.style.fontSize = "14px";
 											infoDivPart.style.position = "relative";
-											infoDivPart.style.fontFamily = "sans-serif";
-						
-						clicked = true;
-						infoDiv.appendChild(infoDivPart);					
+											infoDivPart.style.fontFamily = "sans-serif";						
+						infoDiv.appendChild(infoDivPart);
+					clicked = true;						
 					} //ends for each attribute
-				}); //ends on click
+				}); //ends on click			
 		    });// ends loop through points
-				    var xAxis = d3.svg.axis()
+			
+			
+		//makes a square and text for each color type in svg
+		d3.select("#svg" + colorCode + gene_x + gene_y).append("rect")
+					.attr("fill", "white")
+					.attr("height", 20)
+					.attr("class", "boxText"+colorCode)
+					.attr("display", "block")
+					.attr("zIndex", 100);
+					
+				d3.select("#svg" + colorCode + gene_x + gene_y).append("text")
+					.attr("class", "pointText"+colorCode)
+					.attr("font-size", 13)
+					.attr("font-family", "sans-serif")
+					.attr("display", "block")
+					.attr("zIndex", 100);
+
+					
+		var xAxis = d3.svg.axis()
 		.scale(xScale)
 		.orient("bottom")
 		.ticks(w*.015);  //Set rough # of ticks
-
+		
 	    var yAxis = d3.svg.axis()
 		.scale(yScale)
 		.orient("left")
@@ -205,39 +188,7 @@ function makePlot( geneX, geneY, studyID)
 		.attr("class", "axis")
 		.attr("transform", "translate(" +( padding + 2 )+ ",0)")
 		.call(yAxis);
-		//BRUSH!!!
-		/*
- var brush = d3.svg.brush()
-      .on("brushstart", brushstart)
-      .on("brush", brush)
-      .on("brushend", brushend);
-	  
 
-svg.append("g")
-    .attr("class", "brush")
-    .call(d3.svg.brush().x(xScale).y(yScale)
-    .on("brushstart", brushstart)
-    .on("brush", brush)
-    .on("brushend", brushend));
-
-function brushstart() {
-  svg.classed("selecting", true);
-}
-
-function brush() {
-  var e = d3.event.target.extent();
-  circle.classed("selected", function(d) {
-    return e[0][0] <= d[0] && d[0] <= e[1][0]
-        && e[0][1] <= d[1] && d[1] <= e[1][1];
-  });
-}
-
-function brushend() {
-  svg.classed("selecting", !d3.event.target.empty());
-}
-
-
-		*/
 		    //creates an x label
     svg.append("text")
 	.attr("class", "x label")
@@ -271,42 +222,66 @@ function brushend() {
 	.attr("font-family", "sans-serif")
 	.attr("font-size", padding*.22)
 	.attr("fill", "black");
-			
+		//BRUSH!!!
+		/*
+ var brush = d3.svg.brush()
+      .on("brushstart", brushstart)
+      .on("brush", brush)
+      .on("brushend", brushend);
+	  
+
+svg.append("g")
+    .attr("class", "brush")
+    .call(d3.svg.brush().x(xScale).y(yScale)
+    .on("brushstart", brushstart)
+    .on("brush", brush)
+    .on("brushend", brushend));
+
+function brushstart() {
+  svg.classed("selecting", true);
+}
+
+function brush() {
+  var e = d3.event.target.extent();
+  circle.classed("selected", function(d) {
+    return e[0][0] <= d[0] && d[0] <= e[1][0]
+        && e[0][1] <= d[1] && d[1] <= e[1][1];
+  });
+}
+
+function brushend() {
+  svg.classed("selecting", !d3.event.target.empty());
+}
+
+
+		*/			
 			
 			
 		} //ends for loop of color codes
 		
-	    };//semi colon
-	    //creates the axises
+};//semi colon
+	  
 	        
 	    $("#selectColorCode").change(function(e) {
-		        
-		   // if ($('#this').attr("exists") == "true"){
-			//var circlesToRemove = svg.selectAll("circle");
-			//circlesToRemove.remove();
+
 			colorChosen = select.options[select.selectedIndex].value;
-			var plot = document.getElementById("plot");
-			var hist = document.getElementById("hist");
-			var list = document.getElementById("list");
+			var plot = d3.select("#plot");
+			var hist = d3.select("#hist");
+			var list = d3.select("#list");
 			
 			for (colorCode in window.attributes)
 			{		
 
 					if(colorCode==colorChosen){
-						d3.selectAll(".svg" + colorCode).attr("display", "inline");
+						d3.selectAll(".svg" + colorCode).attr("display", "block");
+
 						}
 					else{
 						d3.selectAll(".svg" + colorCode).attr("display", "none");
-						d3.selectAll("#boxText" + colorCode).attr("display", "none");
-						d3.selectAll("#pointText" + colorCode).attr("display", "none");
+						d3.selectAll(".svg" + colorCode).selectAll(".boxText" + colorCode).attr("display", "none");
+						d3.selectAll(".svg" + colorCode).selectAll(".pointText" + colorCode).attr("display", "none");
 						}
 						
-						
-						//});
-						//}
-					//}
-				//var colorHist = d3.select("#hist"+colorCode);
-				//alert(colorCode+": "+colorHist);
 				if(d3.select("#hist"+colorCode)!=null){
 				if(colorCode==colorChosen){
 						d3.select("#hist"+colorCode).attr("display", "inline");
@@ -343,22 +318,14 @@ function brushend() {
 				
 				
 			}
-			//document.getElementById("list").innerHTML = "";
-			//document.getElementById("hist").innerHTML = "";
-			
-			
-			//drawGraph(d); 
-
-		     
 		}); //ends change
 
 		$(document).click(function() { 
 					
-			var infoDiv = document.getElementById("info");
+			var infoDiv = d3.select("#info");
 			if(!clicked){
 					makeRadiusSmallerAgain();
-					infoDiv.innerHTML = "";
-					
+					infoDiv.html("");					
 					}
 			
 			clicked = false;
@@ -370,8 +337,31 @@ function brushend() {
 		}
 
 	});  //this is supposed to end getJSON
+}
 
 
 
-
+function rollOn (i, point, xScale, yScale){
+	var select = document.getElementById("selectColorCode");
+	var colorCode =  select.options[select.selectedIndex].value;
+	var box = d3.select("#svg" + colorCode + gene_x + gene_y).select(".boxText" + colorCode);
+	//d3.selectAll(".svg" + colorCode).selectAll(".boxText" + colorCode)
+	x = point.x;
+	y = point.y;
+	box.attr("x",  function() {return xScale(x)+3;} )
+	.attr("y", function() { return yScale(y)-19;})
+	.attr("width", function(){return (5+(8*(colorCode.length + (String(attrData[i].sample[colorCode]).length))));})
+	.attr("display", "block");
+	
+	d3.select("#svg" + colorCode + gene_x + gene_y).selectAll(".pointText" + colorCode)
+	.text(function(){return (colorCode + ": " + attrData[i].sample[colorCode])})//"(" + x + ", " + y + ")";})
+	.attr("x",  function() { return xScale(x)+3;} )
+	.attr("y", function() { return yScale(y)-3;})
+	.attr("display", "block");
+}
+function rollOff(){
+	var select = document.getElementById("selectColorCode");
+	colorCode =  select.options[select.selectedIndex].value;
+	d3.selectAll(".svg" + colorCode).selectAll(".boxText" + colorCode).attr("display", "none");
+	d3.selectAll(".svg" + colorCode).selectAll(".pointText" + colorCode).attr("display", "none");
 }

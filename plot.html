@@ -1,21 +1,27 @@
 <html>
 <head>
-	<script type="text/javascript" src="vis4.js"></script>
+	<script type="text/javascript" src="makePlot.js"></script>
+	<script type="text/javascript" src="makeAttributesDictionary.js"></script>
+	<script type="text/javascript" src="makeHistogramAndList.js"></script>
+
 </head>
 <body onload="plottingTime()">
 
 	<script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
 	<script src="http://code.jquery.com/jquery-1.4.2.js"></script>
 	<script language="javascript">
-	var attrData;
+	
 	var attributes;
+	var attrData;
+	
 	function plottingTime() {
 		$.getJSON("attributes.txt", function(data) {
 			attrData = data;
 			//alert("in json function: " + data);
-			attributes = makeAttributesDictionary(attrData);
+			attributes = makeAttributesDictionary();
+			makeHistogramAndList();
 			//alert(attributes);
-			makePlot('CARD16','CARD17','GSE25935',attrData, attributes);
+			makePlot('CARD16','CARD17','GSE25935');
 		});
 				
 
@@ -49,6 +55,12 @@ overflow: hidden
 #list{
 border: 2px solid blue;
 overflow: auto
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
 }
 
 		</style>
