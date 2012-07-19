@@ -121,6 +121,9 @@ function makeTitles(){
 } //ends function makePlot
 
 function changeColors(){
-		var colorCode = d3.select("#selectColorCode").property("value");
-		d3.selectAll(".allCircles").attr("fill",function(d, i){return window.attributes.get(colorCode).colorInterpolator(window.attrData[i].sample[colorCode])});
-}
+		var colorCode = d3.select("#selectColorCode").property("value");		
+		d3.selectAll(".allCircles").attr("fill",function(d, i){
+		while(i>=window.attrData.length)
+			i-=window.attrData.length;
+		return window.attributes.get(colorCode).colorInterpolator(window.attrData[i].sample[colorCode]);});
+} //ends function changeColors
