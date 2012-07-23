@@ -38,50 +38,7 @@ function makePlot(geneX, geneY, studyID, n){
 		.domain([yMin-(yMin*.1),yMax + (yMax*.05)])
 		.range([height - padding, padding]);
 		
-		//figures out selected colorCode
-		var colorCode = d3.select("#selectColorCode").property("value");
-			
-		svg.selectAll("circle")
-		.data(d)
-		.enter()
-		.append("circle")
-			.attr("cx", function(d){
-				return xScale(d.x);
-				})
-			.attr("cy", function(d) {
-				return yScale(d.y);
-				})
-			.attr("r", width*height*.00001)
-			.attr("class", "allCircles")
-			.attr("fill", function(d, i){
-			return attributes.get(colorCode).colorInterpolator(attrData[i].sample[colorCode]);
-				})
-			.style("opacity", .5)
-			.attr("stroke", "black")
-			.attr("stroke-width", .5);
-			
-		var xAxis = d3.svg.axis()
-		.scale(xScale)
-		.orient("bottom")
-		.ticks(width*.015);  //Set rough # of ticks
-		
-		var yAxis = d3.svg.axis()
-		.scale(yScale)
-		.orient("left")
-		.ticks(height*.015);
-
-		svg.append("g")
-		.attr("class", "axis")
-		.attr("transform", "translate(2," + (height - padding) + ")")
-		.call(xAxis);
-
-		svg.append("g")
-		.attr("class", "axis")
-		.attr("transform", "translate(" +( padding + 2 )+ ",0)")
-		.call(yAxis);			
-		
-	}); //ends getJSON
-	makeTitles();
+			makeTitles();
 function makeTitles(){	
 	//creates a title
 	svg.append("text")
@@ -118,12 +75,67 @@ function makeTitles(){
 	.attr("fill", "black");
 	
 	}//end function makeTitles
-} //ends function makePlot
+	
+		//figures out selected colorCode
+		var colorCode = d3.select("#selectColorCode").property("value");
+			
+		svg.selectAll("circle")
+		.data(d)
+		.enter()
+		.append("circle")
+			.attr("cx", function(d){
+				return xScale(d.x);
+				})
+			.attr("cy", function(d) {
+				return yScale(d.y);
+				})
+			.attr("r", width*height*.00001)
+			.attr("class", "allCircles")
+			.attr("fill", function(d, i){
+			return attributes.get(colorCode).colorInterpolator(attrData[i].sample[colorCode]);
+				})
+			.style("opacity", .5)
+			.attr("stroke", "black")
+			.attr("stroke-width", .5)
+			.on("click", function(d, i){
+				fillInfoList(d, i);
+				makeRadiusBigger(this);
+				d3.event.stopPropagation();
+			})
+			.on("mouseover", function(d, i){rollOver(d, i, this, xScale, yScale)})
+			.on("mouseout", function(){rollOff();});
+			
+		var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom")
+		.ticks(width*.015);  //Set rough # of ticks
+		
+		var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.orient("left")
+		.ticks(height*.015);
 
-function changeColors(){
-		var colorCode = d3.select("#selectColorCode").property("value");		
-		d3.selectAll(".allCircles").attr("fill",function(d, i){
-		while(i>=window.attrData.length)
-			i-=window.attrData.length;
-		return window.attributes.get(colorCode).colorInterpolator(window.attrData[i].sample[colorCode]);});
-} //ends function changeColors
+		svg.append("g")
+		.attr("class", "axis")
+		.attr("transform", "translate(2," + (height - padding) + ")")
+		.call(xAxis);
+
+		svg.append("g")
+			.attr("class", "axis")
+			.attr("transform", "translate(" +( padding + 2 )+ ",0)")
+			.call(yAxis);
+
+		d3.select("#plot" + n).append("div")	
+			.attr("class", "pointText")
+			.attr("id", "pointText")
+			.style("font-size", 13)
+			.style("font-family", "sans-serif")
+			.style("display", "none")
+			.style("background", "white")
+			.style("height", 17)
+			.style("min-width", 10)
+			.style("max-width", 200)
+			.style("position", "absolute");		
+		
+	}); //ends getJSON
+} //ends function makePlot

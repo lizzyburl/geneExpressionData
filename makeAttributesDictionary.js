@@ -44,15 +44,33 @@ function createInterpolatorString(key){
 	var colorInterpolator;
 	colorOptions = window.colorTypes.get(key);
 	if(colorOptions.length<=10){
+		var keyChecker = key.toLowerCase();
+
+	if((keyChecker== "gender")||(keyChecker=="sex")){
+		var colorRange = [];
+		colorOptions.forEach(function(gender, i){
+			genderLower = gender.toLowerCase();
+			if((genderLower == "male")||(genderLower == "man")||(genderLower == "boy"))
+				colorRange[i]="blue";
+			else if((genderLower == "female")||(genderLower == "woman")||(genderLower == "girl"))
+				colorRange[i]="fuchsia";
+			else
+				colorRange[i]="green";
+		});
+		colorInterpolator = d3.scale.ordinal()
+		.domain(colorOptions)
+		.range(colorRange);
+	}else{
 		colorInterpolator = d3.scale.category10()
 		.domain(colorOptions);
+		}
 	}
 	else if (colorOptions.length<=20){
-		colorInterpolator = d3.scale.category10()
+		colorInterpolator = d3.scale.category20()
 		.domain(colorOptions);
 	}
 	else{
-		colorRange = [];
+		var colorRange = [];
 		colorOptions.forEach(function(col, i){
 			var hueVal = i*280/colorOptions.length;
 			var hueColor =  "hsl(" + (hueVal) + ", 100%, 50%)";

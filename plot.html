@@ -1,8 +1,10 @@
 <html>
 <head>
 	<script type="text/javascript" src="makePlot.js"></script>
+	<script type="text/javascript" src="events.js"></script>
 	<script type="text/javascript" src="makeAttributesDictionary.js"></script>
 	<script type="text/javascript" src="makeHistogramAndList.js"></script>
+	<script type="text/javascript" src="histogram basic.js"></script>
 
 </head>
 <body onload="plottingTime()">
@@ -13,20 +15,19 @@
 	
 	var attributes;
 	var attrData;
+	var colorTypes = d3.map();
 	
 	function plottingTime() {
+		eventHandlers();
 		$.getJSON("attributes.txt", function(data) {
 			attrData = data;
-			//alert("in json function: " + data);
-			attributes = makeAttributesDictionary();
-			makeHistogramAndList();
-			//alert(attributes);
-			makePlot('CARD16','CARD17','GSE25935');
+			makeAttributesDictionary();
+			makeHistogram();
+			makePlot('CARD16','CARD17','GSE25935', 0);
+			makePlot('CARD16','CARD17','GSE25935', 3);
 		});
-				
-
-		
 	}
+
 	</script>
 	
 	
@@ -64,9 +65,10 @@ overflow: auto
 }
 
 		</style>
-	<div id="plot" style="border:2px solid pink; height:500px; width:700px;"></div>
+	<div id="plot0" class="plots" style="position: relative; border:2px solid pink; height:500px; width:700px;"></div>
+	<div id="plot3" class="plots" style="position: relative; border:2px solid pink; height:500px; width:700px;"></div>
 	<div id="list" style="border:2px solid lightblue; max-height:200px; width:300px;"></div>
 	<div id="hist" style="border:2px solid lightgreen; height:200px; width:400px;"></div>
-	<div id="info" style="border:2px solid purple; max-height:300px; min-height:100px; width:200px; overflow:auto;"></div>
+	<div id="info" style="border:2px solid purple; max-height:300px; min-height:100px; width:250px; overflow:auto;"></div>
 </body>
 </html>
